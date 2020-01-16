@@ -6,14 +6,14 @@ require 'json'
 require 'mechanize'
 require 'progress_bar'
 
-DOWNLOAD_PATH = './audiobooks'.freeze
+DOWNLOAD_PATH = './audiobooks'
 
 def create_folder(directory)
   FileUtils.mkdir_p(directory) unless File.directory?(directory)
-end # create_folder
+end
 
 def client
-  @browser ||= Mechanize.new
+  @client ||= Mechanize.new
 end
 
 def audiobooks
@@ -25,7 +25,7 @@ def audiobooks
   json_data['teaserGroup']['items'].map do |item|
     item['navigation']['href']
   end
-end # get_all_audiobooks
+end
 
 def download_audiobook(path)
   title = path.split('/').last
