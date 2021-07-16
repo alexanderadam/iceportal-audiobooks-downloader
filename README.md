@@ -15,7 +15,7 @@ Original implementation by [SirBenedick](https://github.com/SirBenedick/iceporta
 2. `git clone 'git@github.com:alexanderadam/iceportal-audiobooks-downloader.git'`
 3. `cd iceportal-audiobooks-downloader`
 4. `bundle install`
-5. `bundle exec main.rb`
+5. `bundle exec ruby main.rb`
 6. enjoy
 
 ### ToDo

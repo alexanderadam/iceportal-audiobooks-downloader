@@ -3,4 +3,5 @@
 source 'https://rubygems.org'
 
 gem 'mechanize'
-gem 'progress_bar'
+gem 'ruby-progressbar'
+gem 'mp3info'
