@@ -6,7 +6,8 @@ require 'json'
 require 'mechanize'
 require 'progress_bar'
 
-DOWNLOAD_PATH = './audiobooks'
+DOWNLOAD_PATH = File.expand_path('./audiobooks')
+TMP_EXTENSION = '.tmp'
 
 def create_folder(directory)
   FileUtils.mkdir_p(directory) unless File.directory?(directory)
@@ -22,14 +23,21 @@ def audiobooks
   # extract titles
   json_data = JSON.parse(response.body)
 
-  json_data['teaserGroup']['items'].map do |item|
-    item['navigation']['href']
+  json_data['teaserGroups'].first['items'].map do |item|
+    item['navigation']
   end
 end
 
-def download_audiobook(path)
+def download_audiobook(json)
+  path = json['href']
   title = path.split('/').last
-  puts("\nDownloading audiobook: #{title}")
+  directory = File.join(DOWNLOAD_PATH, title)
+  tmp_dir = "#{directory}#{TMP_EXTENSION}"
+  if Dir.exists?(directory)
+    puts "\nAudiobook #{title} already exists"
+    return
+  end
+  puts "\nDownloading audiobook: #{title}"
 
   chapter_response = client.get("https://iceportal.de/api1/rs/page/hoerbuecher/#{title}")
 
@@ -45,7 +53,7 @@ def download_audiobook(path)
     JSON.parse(response_download_path.body)['path']
   end
 
-  create_folder("./#{DOWNLOAD_PATH}/#{title}")
+  create_folder(tmp_dir)
   progress_bar = ProgressBar.new(download_paths.count)
 
   # download each track
@@ -54,9 +62,10 @@ def download_audiobook(path)
 
     url = "https://iceportal.de#{track}"
 
-    save_path = File.join(DOWNLOAD_PATH, title, "#{title}_#{counter + 1}.mp3")
+    save_path = File.join(tmp_dir, "#{title}_#{counter + 1}.mp3")
     client.download(url, save_path)
   end
+  File.rename(tmp_dir, directory)
 end # download_audiobook
 
 # MAIN
